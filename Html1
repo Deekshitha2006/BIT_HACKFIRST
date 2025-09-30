@@ -1,25 +1,400 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Karnataka Temple Crowd Management</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #2c3e50, #3498db);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: #f1c40f;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            color: #555;
+        }
+        
+        .temple-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 3rem;
+        }
+        
+        .temple-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .temple-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .temple-img {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .temple-img::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        }
+        
+        .temple-info {
+            padding: 1.5rem;
+        }
+        
+        .temple-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .temple-info p {
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .temple-info p i {
+            color: #3498db;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(90deg, #2980b9, #21618c);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(41, 128, 185, 0.4);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 4rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 0.5rem;
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 0 1.5rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: #3498db;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #3498db;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #34495e;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                gap: 20px;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="mb-4">Temples in Karnataka</h1>
-        <div class="row">
-            {% for temple in temples %}
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ temple.name }}</h5>
-                        <p class="card-text">{{ temple.location }}</p>
-                        <a href="/temple/{{ temple.id }}" class="btn btn-primary">Monitor Crowd</a>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-gopuram"></i>
+                    <div>
+                        <h1>Karnataka Temple Management</h1>
+                        <div class="tagline">Real-time Crowd Monitoring System</div>
                     </div>
                 </div>
+                <nav>
+                    <a href="#" class="btn">Admin Login</a>
+                </nav>
             </div>
-            {% endfor %}
         </div>
-    </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h2>Temple Crowd Monitoring System</h2>
+            <p>Real-time crowd density analysis using AI technology for better crowd management at temples across Karnataka</p>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">25+</div>
+                    <div class="stat-label">Temples Monitored</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1.2M</div>
+                    <div class="stat-label">Devotees Tracked</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+        <h2 style="text-align: center; margin: 2rem 0; color: #2c3e50;">Temples in Karnataka</h2>
+        
+        <div class="temple-grid">
+            <div class="temple-card">
+                <div class="temple-img" style="background-image: url('https://images.unsplash.com/photo-1596727147705-309841076716?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="temple-info">
+                    <h3>ISKCON Temple Bangalore</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Rajajinagar, Bangalore</p>
+                    <a href="temple.html?id=iskcon" class="btn">Monitor Crowd</a>
+                </div>
+            </div>
+            
+            <div class="temple-card">
+                <div class="temple-img" style="background-image: url('https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="temple-info">
+                    <h3>Dharmasthala Manjunatha</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Dharmasthala, Dakshina Kannada</p>
+                    <a href="temple.html?id=dharmasthala" class="btn">Monitor Crowd</a>
+                </div>
+            </div>
+            
+            <div class="temple-card">
+                <div class="temple-img" style="background-image: url('https://images.unsplash.com/photo-1600604187059-ba2c7e2c0a3c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="temple-info">
+                    <h3>Kukke Subrahmanya</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Subrahmanya, Dakshina Kannada</p>
+                    <a href="temple.html?id=kukke" class="btn">Monitor Crowd</a>
+                </div>
+            </div>
+            
+            <div class="temple-card">
+                <div class="temple-img" style="background-image: url('https://images.unsplash.com/photo-1618153939118-455a6118b7d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="temple-info">
+                    <h3>Chamundeshwari Temple</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Chamundi Hills, Mysore</p>
+                    <a href="temple.html?id=chamundi" class="btn">Monitor Crowd</a>
+                </div>
+            </div>
+            
+            <div class="temple-card">
+                <div class="temple-img" style="background-image: url('https://images.unsplash.com/photo-1610261927714-f0b914e6c1c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="temple-info">
+                    <h3>Udupi Sri Krishna</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Udupi, Karnataka</p>
+                    <a href="temple.html?id=udupi" class="btn">Monitor Crowd</a>
+                </div>
+            </div>
+            
+            <div class="temple-card">
+                <div class="temple-img" style="background-image: url('https://images.unsplash.com/photo-1596727147705-309841076716?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="temple-info">
+                    <h3>Murudeshwara Temple</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Murudeshwar, Uttara Kannada</p>
+                    <a href="temple.html?id=murudeshwara" class="btn">Monitor Crowd</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About Us</h3>
+                    <p>Karnataka Temple Management System provides real-time crowd monitoring solutions for temples across the state using advanced AI technology.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">All Temples</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> info@karnakatatemple.org</li>
+                        <li><i class="fas fa-phone"></i> +91 80 1234 5678</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Bangalore, Karnataka</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2023 Karnataka Temple Management System. All rights reserved.
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
