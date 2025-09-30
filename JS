@@ -1,0 +1,43 @@
+// Initialize chart
+const ctx = document.getElementById('densityChart').getContext('2d');
+const densityChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Low', 'Medium', 'High'],
+        datasets: [{
+            data: [33, 33, 34],
+            backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' }
+        }
+    }
+});
+
+// Get temple ID from URL
+const templeId = window.location.pathname.split('/').pop();
+
+// Update crowd data
+function updateCrowdData() {
+    fetch(`/api/crowd/${templeId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('head-count').textContent = data.count;
+            document.getElementById('density-level').textContent = data.density;
+            document.getElementById('last-update').textContent = new Date(data.timestamp * 1000).toLocaleTimeString();
+            
+            // Update chart
+            const densityIndex = data.density === 'Low' ? 0 : data.density === 'Medium' ? 1 : 2;
+            densityChart.data.datasets[0].data = [0, 0, 0];
+            densityChart.data.datasets[0].data[densityIndex] = 100;
+            densityChart.update();
+        });
+}
+
+// Initial update and set interval
+updateCrowdData();
+setInterval(updateCrowdData, 2000);  // Update every 2 seconds
