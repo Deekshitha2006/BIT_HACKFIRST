@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Karnataka Temple Crowd Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Temples in Karnataka</h1>
+        <div class="row">
+            {% for temple in temples %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ temple.name }}</h5>
+                        <p class="card-text">{{ temple.location }}</p>
+                        <a href="/temple/{{ temple.id }}" class="btn btn-primary">Monitor Crowd</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
