@@ -12,7 +12,6 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
@@ -274,9 +273,6 @@
                         <div class="tagline">Real-time Crowd Monitoring System</div>
                     </div>
                 </div>
-                <nav>
-                    <a href="#" class="btn">Admin Login</a>
-                </nav>
             </div>
         </div>
     </header>
@@ -288,11 +284,11 @@
             
             <div class="stats">
                 <div class="stat-item">
-                    <div class="stat-number">25+</div>
+                    <div class="stat-number">20+</div>
                     <div class="stat-label">Temples Monitored</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">1.2M</div>
+                    <div class="stat-number">1K</div>
                     <div class="stat-label">Devotees Tracked</div>
                 </div>
                 <div class="stat-item">
@@ -312,7 +308,7 @@
                 <div class="temple-info">
                     <h3>ISKCON Temple Bangalore</h3>
                     <p><i class="fas fa-map-marker-alt"></i> Rajajinagar, Bangalore</p>
-                    <a href="temple.html?id=iskcon" class="btn">Monitor Crowd</a>
+                    <a href="index.html?id=iskon" class="btn">Monitor Crowd</a>
                 </div>
             </div>
             
@@ -321,7 +317,7 @@
                 <div class="temple-info">
                     <h3>Dharmasthala Manjunatha</h3>
                     <p><i class="fas fa-map-marker-alt"></i> Dharmasthala, Dakshina Kannada</p>
-                    <a href="temple.html?id=dharmasthala" class="btn">Monitor Crowd</a>
+                    <a href="index.html?id=dharmasthala" class="btn">Monitor Crowd</a>
                 </div>
             </div>
             
@@ -330,7 +326,7 @@
                 <div class="temple-info">
                     <h3>Kukke Subrahmanya</h3>
                     <p><i class="fas fa-map-marker-alt"></i> Subrahmanya, Dakshina Kannada</p>
-                    <a href="temple.html?id=kukke" class="btn">Monitor Crowd</a>
+                    <a href="index.html?id=kukke" class="btn">Monitor Crowd</a>
                 </div>
             </div>
             
@@ -339,7 +335,7 @@
                 <div class="temple-info">
                     <h3>Chamundeshwari Temple</h3>
                     <p><i class="fas fa-map-marker-alt"></i> Chamundi Hills, Mysore</p>
-                    <a href="temple.html?id=chamundi" class="btn">Monitor Crowd</a>
+                    <a href="index.html?id=chamundi" class="btn">Monitor Crowd</a>
                 </div>
             </div>
             
@@ -348,7 +344,7 @@
                 <div class="temple-info">
                     <h3>Udupi Sri Krishna</h3>
                     <p><i class="fas fa-map-marker-alt"></i> Udupi, Karnataka</p>
-                    <a href="temple.html?id=udupi" class="btn">Monitor Crowd</a>
+                    <a href="index.html?id=udupi" class="btn">Monitor Crowd</a>
                 </div>
             </div>
             
@@ -357,7 +353,7 @@
                 <div class="temple-info">
                     <h3>Murudeshwara Temple</h3>
                     <p><i class="fas fa-map-marker-alt"></i> Murudeshwar, Uttara Kannada</p>
-                    <a href="temple.html?id=murudeshwara" class="btn">Monitor Crowd</a>
+                    <a href="index.html?id=murudeshwara" class="btn">Monitor Crowd</a>
                 </div>
             </div>
         </div>
@@ -382,17 +378,17 @@
                 </div>
                 
                 <div class="footer-section">
-                    <h3>Contact</h3>
+                    <!-- <h3>Contact</h3>
                     <ul class="footer-links">
                         <li><i class="fas fa-envelope"></i> info@karnakatatemple.org</li>
                         <li><i class="fas fa-phone"></i> +91 80 1234 5678</li>
                         <li><i class="fas fa-map-marker-alt"></i> Bangalore, Karnataka</li>
-                    </ul>
+                    </ul> -->
                 </div>
             </div>
             
             <div class="copyright">
-                &copy; 2023 Karnataka Temple Management System. All rights reserved.
+                &copy; Karnataka Temple Management System.
             </div>
         </div>
     </footer>
