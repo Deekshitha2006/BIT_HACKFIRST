@@ -50,7 +50,7 @@
         
         .logo i {
             font-size: 2rem;
-            color: #f1c40f;
+            color: #e6ec29;
         }
         
         .logo h1 {
@@ -59,7 +59,7 @@
         }
         
         .back-btn {
-            background: rgba(255,255,255,0.2);
+            background: rgba(50, 36, 36, 0.2);
             color: white;
             border: none;
             padding: 0.5rem 1rem;
@@ -69,14 +69,15 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
+            text-decoration: none;
         }
         
         .back-btn:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(222, 241, 78, 0.3);
         }
         
         .temple-header {
-            background: white;
+            background: rgb(250, 168, 26);
             border-radius: 12px;
             padding: 2rem;
             margin: 2rem 0;
@@ -95,14 +96,14 @@
         }
         
         .temple-title p {
-            color: #7f8c8d;
+            color: #f4fabc;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
         .temple-title p i {
-            color: #3498db;
+            color: #54778e;
         }
         
         .status-badge {
@@ -115,8 +116,8 @@
         }
         
         .status-low {
-            background: #d4edda;
-            color: #155724;
+            background: #e9cf4a;
+            color: #e1c80d;
         }
         
         .status-medium {
@@ -125,8 +126,8 @@
         }
         
         .status-high {
-            background: #f8d7da;
-            color: #721c24;
+            background: #e4dd07;
+            color: #949e04;
         }
         
         .dashboard {
@@ -137,7 +138,7 @@
         }
         
         .card {
-            background: white;
+            background: rgb(255, 255, 255);
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 8px 30px rgba(0,0,0,0.08);
@@ -366,6 +367,120 @@
                 gap: 1.5rem;
             }
         }
+        
+        /* Object Detection Styles */
+        .detection-container {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .detection-container h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .detection-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        #imageInput {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        #detectButton {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        #detectButton:hover {
+            background: linear-gradient(90deg, #2980b9, #21618c);
+        }
+
+        #preview {
+            margin-top: 15px;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        #uploadedImage {
+            max-width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .detection-box {
+            position: absolute;
+            border: 2px solid #FF0000;
+            background-color: rgba(255, 0, 0, 0.2);
+            pointer-events: none;
+        }
+
+        .label {
+            position: absolute;
+            background: #FF0000;
+            color: white;
+            padding: 2px 5px;
+            font-size: 12px;
+            pointer-events: none;
+            border-radius: 3px;
+        }
+
+        #loading {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detection-results {
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+
+        .detection-results h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .detection-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detection-item:last-child {
+            border-bottom: none;
+        }
+
+        .detection-class {
+            font-weight: 600;
+        }
+
+        .detection-confidence {
+            color: #7f8c8d;
+        }
     </style>
 </head>
 <body>
@@ -376,8 +491,8 @@
                     <i class="fas fa-gopuram"></i>
                     <h1>Temple Crowd Monitor</h1>
                 </div>
-                <a href="index.html" class="back-btn">
-                    <i class="fas fa-arrow-left"></i> Back to Temples
+                <a href="index1.html" class="back-btn">
+                    <i class="fas fa-arrow-left" ></i> Back to Temples
                 </a>
             </div>
         </div>
@@ -435,17 +550,27 @@
 
         <div class="card">
             <div class="card-header">
-                <i class="fas fa-video"></i> Live Video Feed
+                <i class="fas fa-video"></i> Live Video Feed & Object Detection
             </div>
             <div class="card-body">
-                <div class="video-container">
-                    <div class="video-placeholder">
-                        <i class="fas fa-video-slash"></i>
-                        <h3>Video Feed Placeholder</h3>
-                        <p>This area will display the live video feed from the temple with real-time head count overlay using YOLOv8 technology.</p>
+                <div class="detection-container">
+                    <h2>YOLOv8 Object Detection</h2>
+                    <div class="detection-controls">
+                        <input type="file" id="imageInput" accept="image/*">
+                        <button id="detectButton">Detect Objects</button>
+                    </div>
+                    <div id="preview">
+                        <img id="uploadedImage" style="max-width: 100%;">
+                        <div id="detections"></div>
+                    </div>
+                    <div id="loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Processing image...
+                    </div>
+                    <div class="detection-results" id="detection-results" style="display: none;">
+                        <h3>Detection Results</h3>
+                        <div id="detection-list"></div>
                     </div>
                 </div>
-                
                 <div class="controls">
                     <button class="btn">
                         <i class="fas fa-play"></i> Start Monitoring
@@ -477,12 +602,6 @@
                 </div>
                 
                 <div class="footer-section">
-                    <h3>Contact</h3>
-                    <ul class="footer-links">
-                        <li><i class="fas fa-envelope"></i> info@karnakatatemple.org</li>
-                        <li><i class="fas fa-phone"></i> +91 80 1234 5678</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Bangalore, Karnataka</li>
-                    </ul>
                 </div>
             </div>
             
@@ -492,99 +611,6 @@
         </div>
     </footer>
 
-    <script>
-        // Initialize chart
-        const ctx = document.getElementById('densityChart').getContext('2d');
-        const densityChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Low', 'Medium', 'High'],
-                datasets: [{
-                    data: [30, 50, 20],
-                    backgroundColor: [
-                        '#2ecc71', // Green for low
-                        '#f39c12', // Orange for medium
-                        '#e74c3c'  // Red for high
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            font: {
-                                size: 14
-                            },
-                            padding: 20
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.label + ': ' + context.raw + '%';
-                            }
-                        }
-                    }
-                },
-                cutout: '70%'
-            }
-        });
-
-        // Simulate real-time updates
-        function updateMetrics() {
-            // Generate random values for demonstration
-            const headCount = Math.floor(Math.random() * 100) + 10;
-            let densityLevel;
-            let densityClass;
-            
-            if (headCount < 30) {
-                densityLevel = 'Low';
-                densityClass = 'status-low';
-            } else if (headCount < 60) {
-                densityLevel = 'Medium';
-                densityClass = 'status-medium';
-            } else {
-                densityLevel = 'High';
-                densityClass = 'status-high';
-            }
-            
-            // Update DOM elements
-            document.getElementById('head-count').textContent = headCount;
-            document.getElementById('density-level').textContent = densityLevel;
-            
-            // Update density badge
-            const badge = document.getElementById('density-badge');
-            badge.className = 'status-badge ' + densityClass;
-            badge.innerHTML = '<i class="fas fa-users"></i> ' + densityLevel + ' Crowd';
-            
-            // Update chart
-            let lowPercent, mediumPercent, highPercent;
-            
-            if (densityLevel === 'Low') {
-                lowPercent = 80;
-                mediumPercent = 15;
-                highPercent = 5;
-            } else if (densityLevel === 'Medium') {
-                lowPercent = 30;
-                mediumPercent = 60;
-                highPercent = 10;
-            } else {
-                lowPercent = 10;
-                mediumPercent = 20;
-                highPercent = 70;
-            }
-            
-            densityChart.data.datasets[0].data = [lowPercent, mediumPercent, highPercent];
-            densityChart.update();
-        }
-
-        // Initial update and set interval
-        updateMetrics();
-        setInterval(updateMetrics, 5000); // Update every 5 seconds
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
