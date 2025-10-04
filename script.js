@@ -1,4 +1,4 @@
-   // Temple data - updated to match the temple selection page
+// Temple data - updated to match the temple selection page
         const temples = {
             iskon: {
                 name: "ISKCON Temple Bangalore",
