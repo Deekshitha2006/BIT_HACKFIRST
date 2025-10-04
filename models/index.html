@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temple Crowd Monitor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #2c3e50, #3498db);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: #e6ec29;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .back-btn {
+            background: rgba(50, 36, 36, 0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .back-btn:hover {
+            background: rgba(222, 241, 78, 0.3);
+        }
+        
+        .temple-header {
+            background: rgb(250, 168, 26);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .temple-title h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .temple-title p {
+            color: #f4fabc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .temple-title p i {
+            color: #54778e;
+        }
+        
+        .status-badge {
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-low {
+            background: #e9cf4a;
+            color: #e1c80d;
+        }
+        
+        .status-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-high {
+            background: #e4dd07;
+            color: #949e04;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: rgb(255, 255, 255);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+        
+        .card-header {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .metrics {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        
+        .metric {
+            flex: 1;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: #7f8c8d;
+        }
+        
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #000;
+        }
+        
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+        }
+        
+        .video-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #3498db;
+        }
+        
+        .video-placeholder h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .video-placeholder p {
+            color: #bdc3c7;
+            text-align: center;
+            max-width: 80%;
+        }
+        
+        /* .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 1.5rem;
+        } */
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(90deg, #2980b9, #21618c);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(41, 128, 185, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #95a5a6, #7f8c8d);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(90deg, #7f8c8d, #6c7b7d);
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #3498db;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .alert i {
+            font-size: 1.5rem;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 0 1.5rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: #3498db;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #3498db;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #34495e;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .temple-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+        
+        /* Object Detection Styles */
+        .detection-container {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .detection-container h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .detection-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            min-width: 60px;
+        }
+
+        #imageInput {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 200px;
+        }
+
+        #detectButton, #detectCrowdButton {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        #detectButton:hover, #detectCrowdButton:hover {
+            background: linear-gradient(90deg, #2980b9, #21618c);
+        }
+
+        #detectCrowdButton {
+            background: linear-gradient(90deg, #95a5a6, #7f8c8d);
+        }
+
+        #detectCrowdButton:hover {
+            background: linear-gradient(90deg, #7f8c8d, #6c7b7d);
+        }
+
+        #preview {
+            margin-top: 15px;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        #uploadedImage {
+            max-width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .detection-box {
+            position: absolute;
+            border: 2px solid #FF0000;
+            background-color: rgba(255, 0, 0, 0.2);
+            pointer-events: none;
+        }
+
+        .label {
+            position: absolute;
+            background: #FF0000;
+            color: white;
+            padding: 2px 5px;
+            font-size: 12px;
+            pointer-events: none;
+            border-radius: 3px;
+        }
+
+        #loading {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detection-results {
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+
+        .detection-results h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .detection-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detection-item:last-child {
+            border-bottom: none;
+        }
+
+        .detection-class {
+            font-weight: 600;
+        }
+
+        .detection-confidence {
+            color: #7f8c8d;
+        }
+
+        #crowd-metrics {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        #crowd-metrics h4 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        #crowd-metrics .metrics {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-gopuram"></i>
+                    <h1>Temple Crowd Monitor</h1>
+                </div>
+                <a href="index1.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Temples
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="temple-header">
+            <div class="temple-title">
+                <h2 id="temple-name">Loading temple data...</h2>
+                <p><i class="fas fa-map-marker-alt"></i> <span id="temple-location">Loading location...</span></p>
+            </div>
+            <div class="status-badge status-medium" id="density-badge">
+                <i class="fas fa-users"></i> <span id="density-status">No Data</span>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>Real-time Monitoring Active</strong>
+                <p>Upload a crowd image or video to analyze using YOLOv8 AI technology. Results will be displayed in the dashboard below.</p>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie"></i> Crowd Density Analysis
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="densityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-users"></i> Current Crowd Metrics
+                </div>
+                <div class="card-body">
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value" id="head-count">0</div>
+                            <div class="metric-label">People Counted</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="density-level">No Data</div>
+                            <div class="metric-label">Crowd Density</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-video"></i> Live Video Feed & Object Detection
+            </div>
+            <div class="card-body">
+                <div class="detection-container">
+                    <h2>YOLOv8 Object Detection</h2>
+                    
+                    <div class="detection-controls">
+                        <div class="input-group">
+                            <label for="imageInput">Image:</label>
+                            <input type="file" id="imageInput" accept="image/*">
+                            <button id="detectButton">Standard Detection</button>
+                            <button id="detectCrowdButton" class="btn-secondary">Crowd Detection</button>
+                        </div>
+                    </div>
+                    
+                    <div id="preview">
+                        <img id="uploadedImage" style="max-width: 100%; display: none;">
+                        <div id="detections"></div>
+                    </div>
+                    
+                    <div id="loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> <span id="loading-text">Processing image...</span>
+                    </div>
+                    
+                    <div class="detection-results" id="detection-results" style="display: none;">
+                        <h3>Detection Results</h3>
+                        <div id="detection-list"></div>
+                        
+                        <div id="crowd-metrics" style="display: none;">
+                            <h4>Crowd Analysis</h4>
+                            <div class="metrics">
+                                <div class="metric">
+                                    <div class="metric-value" id="people-count">0</div>
+                                    <div class="metric-label">People Counted</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-value" id="crowd-level">Low</div>
+                                    <div class="metric-label">Crowd Level</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-value" id="crowd-density">0</div>
+                                    <div class="metric-label">Density (per Mpx)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- <div class="controls">
+                    <button class="btn">
+                        <i class="fas fa-play"></i> Start Monitoring
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About This System</h3>
+                    <p>This temple monitoring system uses advanced YOLOv8 AI technology to provide real-time crowd analysis for better management and safety of devotees.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Technology</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">YOLOv8 AI</a></li>
+                        <li><a href="#">Computer Vision</a></li>
+                        <li><a href="#">Real-time Processing</a></li>
+                        <li><a href="#">Data Analytics</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2023 Karnataka Temple Management System. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Temple data - updated to match the temple selection page
+        const temples = {
+            iskon: {
+                name: "ISKCON Temple Bangalore",
+                location: "Rajajinagar, Bangalore"
+            },
+            dharmasthala: {
+                name: "Dharmasthala Manjunatha",
+                location: "Dharmasthala, Dakshina Kannada"
+            },
+            kukke: {
+                name: "Kukke Subrahmanya",
+                location: "Subrahmanya, Dakshina Kannada"
+            },
+            chamundi: {
+                name: "Chamundeshwari Temple",
+                location: "Chamundi Hills, Mysore"
+            },
+            udupi: {
+                name: "Udupi Sri Krishna",
+                location: "Udupi, Karnataka"
+            },
+            murudeshwara: {
+                name: "Murudeshwara Temple",
+                location: "Murudeshwar, Uttara Kannada"
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get temple ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const templeId = urlParams.get('id');
+            
+            // Set temple information
+            if (templeId && temples[templeId]) {
+                document.getElementById('temple-name').textContent = temples[templeId].name;
+                document.getElementById('temple-location').textContent = temples[templeId].location;
+            } else {
+                // Default to ISKCON if no ID or invalid ID
+                document.getElementById('temple-name').textContent = temples.iskon.name;
+                document.getElementById('temple-location').textContent = temples.iskon.location;
+            }
+            
+            // Object Detection Code
+            const detectButton = document.getElementById('detectButton');
+            const imageInput = document.getElementById('imageInput');
+            const uploadedImage = document.getElementById('uploadedImage');
+            const detectionsContainer = document.getElementById('detections');
+            const loadingIndicator = document.getElementById('loading');
+            const loadingText = document.getElementById('loading-text');
+            const detectionResults = document.getElementById('detection-results');
+            const detectionList = document.getElementById('detection-list');
+            const detectCrowdButton = document.getElementById('detectCrowdButton');
+            const crowdMetrics = document.getElementById('crowd-metrics');
+            const peopleCountElement = document.getElementById('people-count');
+            const crowdLevelElement = document.getElementById('crowd-level');
+            const crowdDensityElement = document.getElementById('crowd-density');
+            
+            // Initialize chart
+            const ctx = document.getElementById('densityChart').getContext('2d');
+            const densityChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Low', 'Medium', 'High'],
+                    datasets: [{
+                        data: [100, 0, 0], // Initially all low
+                        backgroundColor: [
+                            '#2ecc71', // Green for low
+                            '#f39c12', // Orange for medium
+                            '#e74c3c'  // Red for high
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 14
+                                },
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+            
+            detectButton.addEventListener('click', async function() {
+                const file = imageInput.files[0];
+                
+                if (!file) {
+                    alert('Please select an image');
+                    return;
+                }
+                
+                // Show loading indicator
+                loadingIndicator.style.display = 'flex';
+                loadingText.textContent = 'Processing image...';
+                detectionsContainer.innerHTML = '';
+                detectionResults.style.display = 'none';
+                crowdMetrics.style.display = 'none';
+                uploadedImage.style.display = 'block';
+                
+                // Display uploaded image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                // Send to backend with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    const response = await fetch('http://localhost:5000/detect', {
+                        method: 'POST',
+                        body: formData,
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Server responded with status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    drawDetections(data.detections);
+                    displayDetectionResults(data.detections);
+                    
+                    // Update dashboard with real data
+                    if (data.people_count !== undefined) {
+                        updateDashboard(data.people_count, "Medium"); // Default to Medium for standard detection
+                    }
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        alert('Processing timed out. Please try with a smaller image.');
+                    } else {
+                        console.error('Error:', error);
+                        alert(`Detection failed: ${error.message}\n\nPlease make sure the Flask server is running on http://localhost:5000`);
+                    }
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+            
+            detectCrowdButton.addEventListener('click', async function() {
+                const file = imageInput.files[0];
+                if (!file) {
+                    alert('Please select an image');
+                    return;
+                }
+                
+                // Reset containers
+                detectionsContainer.innerHTML = '';
+                uploadedImage.style.display = 'block';
+                detectionResults.style.display = 'none';
+                crowdMetrics.style.display = 'none';
+                
+                // Show loading indicator
+                loadingIndicator.style.display = 'flex';
+                loadingText.textContent = 'Processing crowd detection (this may take up to 60 seconds)...';
+                
+                // Display uploaded image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                // Send to backend with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    const response = await fetch('http://localhost:5000/detect_crowd', {
+                        method: 'POST',
+                        body: formData,
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Server responded with status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    drawDetections(data.detections);
+                    displayDetectionResults(data.detections);
+                    
+                    // Show enhanced crowd metrics
+                    peopleCountElement.textContent = data.people_count;
+                    crowdLevelElement.textContent = data.crowd_level;
+                    crowdDensityElement.textContent = data.crowd_density;
+                    crowdMetrics.style.display = 'block';
+                    
+                    // Update the dashboard with real crowd data
+                    updateDashboard(data.people_count, data.crowd_level);
+                    
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        alert('Crowd detection timed out. Please try with a smaller image or use standard detection.');
+                    } else {
+                        console.error('Error:', error);
+                        alert(`Detection failed: ${error.message}\n\nPlease make sure the Flask server is running on http://localhost:5000`);
+                    }
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+            
+            function updateDashboard(peopleCount, crowdLevel) {
+                // Update the dashboard metrics
+                document.getElementById('head-count').textContent = peopleCount;
+                document.getElementById('density-level').textContent = crowdLevel;
+                
+                // Update density badge
+                const badge = document.getElementById('density-badge');
+                const statusText = document.getElementById('density-status');
+                
+                let densityClass;
+                if (crowdLevel === 'Low') {
+                    densityClass = 'status-low';
+                } else if (crowdLevel === 'Medium') {
+                    densityClass = 'status-medium';
+                } else {
+                    densityClass = 'status-high';
+                }
+                
+                badge.className = 'status-badge ' + densityClass;
+                statusText.textContent = crowdLevel + ' Crowd';
+                
+                // Update the chart
+                let lowPercent, mediumPercent, highPercent;
+                
+                if (crowdLevel === 'Low') {
+                    lowPercent = 80;
+                    mediumPercent = 15;
+                    highPercent = 5;
+                } else if (crowdLevel === 'Medium') {
+                    lowPercent = 30;
+                    mediumPercent = 60;
+                    highPercent = 10;
+                } else {
+                    lowPercent = 10;
+                    mediumPercent = 20;
+                    highPercent = 70;
+                }
+                
+                densityChart.data.datasets[0].data = [lowPercent, mediumPercent, highPercent];
+                densityChart.update();
+            }
+            
+            function drawDetections(detections) {
+                detectionsContainer.innerHTML = '';
+                
+                if (uploadedImage.complete) {
+                    // Image is already loaded, draw immediately
+                    drawBoundingBoxes(detections);
+                } else {
+                    // Wait for image to load
+                    uploadedImage.onload = function() {
+                        drawBoundingBoxes(detections);
+                    };
+                }
+            }
+            
+            function drawBoundingBoxes(detections) {
+                const scaleX = uploadedImage.clientWidth / uploadedImage.naturalWidth;
+                const scaleY = uploadedImage.clientHeight / uploadedImage.naturalHeight;
+                
+                detections.forEach(detection => {
+                    const [x1, y1, x2, y2] = detection.bbox;
+                    
+                    // Create bounding box
+                    const box = document.createElement('div');
+                    box.className = 'detection-box';
+                    box.style.left = `${x1 * scaleX}px`;
+                    box.style.top = `${y1 * scaleY}px`;
+                    box.style.width = `${(x2 - x1) * scaleX}px`;
+                    box.style.height = `${(y2 - y1) * scaleY}px`;
+                    
+                    // Create label
+                    const label = document.createElement('div');
+                    label.className = 'label';
+                    label.textContent = `${detection.class} ${(detection.confidence * 100).toFixed(1)}%`;
+                    label.style.left = `${x1 * scaleX}px`;
+                    label.style.top = `${y1 * scaleY - 20}px`;
+                    
+                    detectionsContainer.appendChild(box);
+                    detectionsContainer.appendChild(label);
+                });
+            }
+            
+            function displayDetectionResults(detections) {
+                detectionList.innerHTML = '';
+                
+                if (detections.length === 0) {
+                    detectionList.innerHTML = '<div class="detection-item">No objects detected</div>';
+                } else {
+                    // Count objects by class
+                    const classCounts = {};
+                    detections.forEach(detection => {
+                        if (!classCounts[detection.class]) {
+                            classCounts[detection.class] = {
+                                count: 0,
+                                confidences: []
+                            };
+                        }
+                        classCounts[detection.class].count++;
+                        classCounts[detection.class].confidences.push(detection.confidence);
+                    });
+                    
+                    // Display results
+                    for (const className in classCounts) {
+                        const item = document.createElement('div');
+                        item.className = 'detection-item';
+                        
+                        const avgConfidence = classCounts[className].confidences.reduce((a, b) => a + b, 0) / classCounts[className].confidences.length;
+                        
+                        item.innerHTML = `
+                            <span class="detection-class">${className}: ${classCounts[className].count}</span>
+                            <span class="detection-confidence">${(avgConfidence * 100).toFixed(1)}% confidence</span>
+                        `;
+                        
+                        detectionList.appendChild(item);
+                    }
+                }
+                
+                detectionResults.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
