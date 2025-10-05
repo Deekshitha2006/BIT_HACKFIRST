@@ -403,7 +403,7 @@
             min-width: 60px;
         }
 
-        #imageInput {
+        #imageInput, #videoInput, #motionVideoInput, #distanceImageInput {
             flex: 1;
             padding: 8px;
             border: 1px solid #ddd;
@@ -411,7 +411,7 @@
             min-width: 200px;
         }
 
-        #detectButton, #detectCrowdButton {
+        #detectButton, #detectCrowdButton, #processVideoButton, #motionButton, #socialDistanceButton {
             background: linear-gradient(90deg, #3498db, #2980b9);
             color: white;
             border: none;
@@ -423,7 +423,7 @@
             white-space: nowrap;
         }
 
-        #detectButton:hover, #detectCrowdButton:hover {
+        #detectButton:hover, #detectCrowdButton:hover, #processVideoButton:hover, #motionButton:hover, #socialDistanceButton:hover {
             background: linear-gradient(90deg, #2980b9, #21618c);
         }
 
@@ -435,6 +435,31 @@
             background: linear-gradient(90deg, #7f8c8d, #6c7b7d);
         }
 
+        #processVideoButton {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+
+        #processVideoButton:hover {
+            background: linear-gradient(90deg, #c0392b, #a93226);
+        }
+
+        
+        #motionButton {
+            background: linear-gradient(90deg, #9b59b6, #8e44ad);
+        }
+
+        #motionButton:hover {
+            background: linear-gradient(90deg, #8e44ad, #7d3c98);
+        }
+
+        #socialDistanceButton {
+            background: linear-gradient(90deg, #1abc9c, #16a085);
+        }
+
+        #socialDistanceButton:hover {
+            background: linear-gradient(90deg, #16a085, #138d75);
+        }
+
         #preview {
             margin-top: 15px;
             position: relative;
@@ -442,10 +467,14 @@
             width: 100%;
         }
 
-        #uploadedImage {
+        #uploadedImage, #processedVideo {
             max-width: 100%;
             border-radius: 4px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        #processedVideo {
+            display: none;
         }
 
         .detection-box {
@@ -523,6 +552,68 @@
         #crowd-metrics .metrics {
             margin-top: 10px;
         }
+
+        .opencv-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e9f7fe;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+            font-size: 0.9rem;
+        }
+
+        .opencv-info h4 {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .opencv-info p {
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .opencv-info ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .opencv-info li {
+            margin-bottom: 3px;
+        }
+
+        .feature-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .feature-tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s ease;
+        }
+
+        .feature-tab.active {
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .feature-tab:hover {
+            color: #3498db;
+        }
+
+        .feature-content {
+            display: none;
+        }
+
+        .feature-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -532,7 +623,7 @@
                 <div class="logo">
                     <i class="fas fa-gopuram"></i>
                     <h1>Temple Crowd Monitor</h1>
-                </div>
+                </div>  
                 <a href="{{ url_for('index') }}" class="back-btn">
                     <i class="fas fa-arrow-left"></i> Back to Temples
                 </a>
@@ -555,7 +646,7 @@
             <i class="fas fa-info-circle"></i>
             <div>
                 <strong>Real-time Monitoring Active</strong>
-                <p>Upload a crowd image or video to analyze using YOLOv8 AI technology. Results will be displayed in the dashboard below.</p>
+                <p>Upload a crowd image or video to analyze using OpenCV and YOLOv8 AI technology. Results will be displayed in the dashboard below.</p>
             </div>
         </div>
 
@@ -596,19 +687,59 @@
             </div>
             <div class="card-body">
                 <div class="detection-container">
-                    <h2>YOLOv8 Object Detection</h2>
+                    <h2>OpenCV & YOLOv8 Object Detection</h2>
                     
-                    <div class="detection-controls">
-                        <div class="input-group">
-                            <label for="imageInput">Image:</label>
-                            <input type="file" id="imageInput" accept="image/*">
-                            <button id="detectButton">Standard Detection</button>
-                            <button id="detectCrowdButton" class="btn-secondary">Crowd Detection</button>
+                    <div class="feature-tabs">
+                        <button class="feature-tab active" data-tab="detection">Detection</button>
+                        
+                        <button class="feature-tab" data-tab="motion">Motion Tracking</button>
+                        <button class="feature-tab" data-tab="distance">Social Distance</button>
+                    </div>
+                    
+                    <div class="feature-content active" id="detection-content">
+                        <div class="detection-controls">
+                            <div class="input-group">
+                                <label for="imageInput">Image:</label>
+                                <input type="file" id="imageInput" accept="image/*">
+                                <button id="detectButton">Standard Detection</button>
+                                <button id="detectCrowdButton" class="btn-secondary">Crowd Detection</button>
+                            </div>
+                        </div>
+
+                        <div class="detection-controls">
+                            <div class="input-group">
+                                <label for="videoInput">Video:</label>
+                                <input type="file" id="videoInput" accept="video/*">
+                                <button id="processVideoButton">Process Video</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    <div class="feature-content" id="motion-content">
+                        <div class="detection-controls">
+                            <div class="input-group">
+                                <label for="motionVideoInput">Video:</label>
+                                <input type="file" id="motionVideoInput" accept="video/*">
+                                <button id="motionButton">Track Motion</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-content" id="distance-content">
+                        <div class="detection-controls">
+                            <div class="input-group">
+                                <label for="distanceImageInput">Image:</label>
+                                <input type="file" id="distanceImageInput" accept="image/*">
+                                <button id="socialDistanceButton">Check Social Distancing</button>
+                            </div>
                         </div>
                     </div>
                     
                     <div id="preview">
                         <img id="uploadedImage" style="max-width: 100%; display: none;">
+                        <video id="processedVideo" style="max-width: 100%; display: none;" controls></video>
                         <div id="detections"></div>
                     </div>
                     
@@ -638,9 +769,18 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="opencv-info">
+                        <h4>OpenCV Features Enabled</h4>
+                        <p>This system uses OpenCV for advanced image processing:</p>
+                        <ul>
+                            <li>Real-time object detection with YOLOv8</li>
+                            <li>Motion tracking and flow analysis</li>
+                            <li>Social distancing monitoring</li>
+                            <li>Video processing with frame-by-frame analysis</li>
+                        </ul>
+                    </div>
                 </div>
-                
-                
             </div>
         </div>
     </div>
@@ -650,20 +790,26 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>About This System</h3>
-                    <p>This temple monitoring system uses advanced YOLOv8 AI technology to provide real-time crowd analysis for better management and safety of devotees.</p>
+                    <p>This temple monitoring system uses advanced OpenCV and YOLOv8 AI technology to provide real-time crowd analysis for better management and safety of devotees.</p>
                 </div>
                 
                 <div class="footer-section">
                     <h3>Technology</h3>
                     <ul class="footer-links">
+                        <li><a href="#">OpenCV</a></li>
                         <li><a href="#">YOLOv8 AI</a></li>
                         <li><a href="#">Computer Vision</a></li>
                         <li><a href="#">Real-time Processing</a></li>
-                        <li><a href="#">Data Analytics</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
+                    <h3>Features</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Motion Tracking</a></li>
+                        <li><a href="#">Social Distance</a></li>
+                        <li><a href="#">Density Analysis</a></li>
+                    </ul>
                 </div>
             </div>
             
@@ -673,368 +819,795 @@
         </div>
     </footer>
 
-    <script>
-        // Temple data - updated to match the temple selection page
-        const temples = {
-            iskon: {
-                name: "ISKCON Temple Bangalore",
-                location: "Rajajinagar, Bangalore"
-            },
-            dharmasthala: {
-                name: "Dharmasthala Manjunatha",
-                location: "Dharmasthala, Dakshina Kannada"
-            },
-            kukke: {
-                name: "Kukke Subrahmanya",
-                location: "Subrahmanya, Dakshina Kannada"
-            },
-            chamundi: {
-                name: "Chamundeshwari Temple",
-                location: "Chamundi Hills, Mysore"
-            },
-            udupi: {
-                name: "Udupi Sri Krishna",
-                location: "Udupi, Karnataka"
-            },
-            murudeshwara: {
-                name: "Murudeshwara Temple",
-                location: "Murudeshwar, Uttara Kannada"
-            }
-        };
+     <!-- new update on data on upper part -->
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get temple ID from Flask (passed as a template variable)
-            const templeId = "{{ temple_id }}";
-            
-            // Set temple information
-            if (templeId && temples[templeId]) {
-                document.getElementById('temple-name').textContent = temples[templeId].name;
-                document.getElementById('temple-location').textContent = temples[templeId].location;
-            } else {
-                // Default to ISKCON if no ID or invalid ID
-                document.getElementById('temple-name').textContent = temples.iskon.name;
-                document.getElementById('temple-location').textContent = temples.iskon.location;
-            }
-            
-            // Object Detection Code
-            const detectButton = document.getElementById('detectButton');
-            const imageInput = document.getElementById('imageInput');
-            const uploadedImage = document.getElementById('uploadedImage');
-            const detectionsContainer = document.getElementById('detections');
-            const loadingIndicator = document.getElementById('loading');
-            const loadingText = document.getElementById('loading-text');
-            const detectionResults = document.getElementById('detection-results');
-            const detectionList = document.getElementById('detection-list');
-            const detectCrowdButton = document.getElementById('detectCrowdButton');
-            const crowdMetrics = document.getElementById('crowd-metrics');
-            const peopleCountElement = document.getElementById('people-count');
-            const crowdLevelElement = document.getElementById('crowd-level');
-            const crowdDensityElement = document.getElementById('crowd-density');
-            
-            // Initialize chart
-            const ctx = document.getElementById('densityChart').getContext('2d');
-            const densityChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Low', 'Medium', 'High'],
-                    datasets: [{
-                        data: [100, 0, 0], // Initially all low
-                        backgroundColor: [
-                            '#2ecc71', // Green for low
-                            '#f39c12', // Orange for medium
-                            '#e74c3c'  // Red for high
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: {
-                                    size: 14
-                                },
-                                padding: 20
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ' + context.raw + '%';
-                                }
-                            }
+   <script>
+    // Temple data - updated to match the temple selection page
+    const temples = {
+        iskon: {
+            name: "ISKCON Temple Bangalore",
+            location: "Rajajinagar, Bangalore"
+        },
+        dharmasthala: {
+            name: "Dharmasthala Manjunatha",
+            location: "Dharmasthala, Dakshina Kannada"
+        },
+        kukke: {
+            name: "Kukke Subrahmanya",
+            location: "Subrahmanya, Dakshina Kannada"
+        },
+        chamundi: {
+            name: "Chamundeshwari Temple",
+            location: "Chamundi Hills, Mysore"
+        },
+        udupi: {
+            name: "Udupi Sri Krishna",
+            location: "Udupi, Karnataka"
+        },
+        murudeshwara: {
+            name: "Murudeshwara Temple",
+            location: "Murudeshwar, Uttara Kannada"
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get temple ID from Flask (passed as a template variable)
+        const templeId = "{{ temple_id }}";
+        
+        // Set temple information
+        if (templeId && temples[templeId]) {
+            document.getElementById('temple-name').textContent = temples[templeId].name;
+            document.getElementById('temple-location').textContent = temples[templeId].location;
+        } else {
+            // Default to ISKCON if no ID or invalid ID
+            document.getElementById('temple-name').textContent = temples.iskon.name;
+            document.getElementById('temple-location').textContent = temples.iskon.location;
+        }
+        
+        // Object Detection Code
+        const detectButton = document.getElementById('detectButton');
+        const imageInput = document.getElementById('imageInput');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const processedVideo = document.getElementById('processedVideo');
+        const detectionsContainer = document.getElementById('detections');
+        const loadingIndicator = document.getElementById('loading');
+        const loadingText = document.getElementById('loading-text');
+        const detectionResults = document.getElementById('detection-results');
+        const detectionList = document.getElementById('detection-list');
+        const detectCrowdButton = document.getElementById('detectCrowdButton');
+        const crowdMetrics = document.getElementById('crowd-metrics');
+        const peopleCountElement = document.getElementById('people-count');
+        const crowdLevelElement = document.getElementById('crowd-level');
+        const crowdDensityElement = document.getElementById('crowd-density');
+        
+        // Video processing elements
+        const videoInput = document.getElementById('videoInput');
+        const processVideoButton = document.getElementById('processVideoButton');
+        
+        // Feature tab elements
+        const featureTabs = document.querySelectorAll('.feature-tab');
+        const featureContents = document.querySelectorAll('.feature-content');
+        
+        // Additional feature elements
+        const motionVideoInput = document.getElementById('motionVideoInput');
+        const motionButton = document.getElementById('motionButton');
+        const distanceImageInput = document.getElementById('distanceImageInput');
+        const socialDistanceButton = document.getElementById('socialDistanceButton');
+        
+        // Initialize chart
+        const ctx = document.getElementById('densityChart').getContext('2d');
+        const densityChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Low', 'Medium', 'High'],
+                datasets: [{
+                    data: [100, 0, 0], // Initially all low
+                    backgroundColor: [
+                        '#2ecc71', // Green for low
+                        '#f39c12', // Orange for medium
+                        '#e74c3c'  // Red for high
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 14
+                            },
+                            padding: 20
                         }
                     },
-                    cutout: '70%'
-                }
-            });
-            
-            detectButton.addEventListener('click', async function() {
-                const file = imageInput.files[0];
-                
-                if (!file) {
-                    alert('Please select an image');
-                    return;
-                }
-                
-                // Show loading indicator
-                loadingIndicator.style.display = 'flex';
-                loadingText.textContent = 'Processing image...';
-                detectionsContainer.innerHTML = '';
-                detectionResults.style.display = 'none';
-                crowdMetrics.style.display = 'none';
-                uploadedImage.style.display = 'block';
-                
-                // Display uploaded image
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedImage.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-                
-                // Send to backend with timeout
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-                
-                const formData = new FormData();
-                formData.append('file', file);
-                
-                try {
-                    const response = await fetch('/detect', {
-                        method: 'POST',
-                        body: formData,
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    if (!response.ok) {
-                        throw new Error(`Server responded with status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
-                    
-                    drawDetections(data.detections);
-                    displayDetectionResults(data.detections);
-                    
-                    // Update dashboard with real data
-                    if (data.people_count !== undefined) {
-                        updateDashboard(data.people_count, "Medium"); // Default to Medium for standard detection
-                    }
-                } catch (error) {
-                    if (error.name === 'AbortError') {
-                        alert('Processing timed out. Please try with a smaller image.');
-                    } else {
-                        console.error('Error:', error);
-                        alert(`Detection failed: ${error.message}\n\nPlease make sure the Flask server is running.`);
-                    }
-                } finally {
-                    loadingIndicator.style.display = 'none';
-                }
-            });
-            
-            detectCrowdButton.addEventListener('click', async function() {
-                const file = imageInput.files[0];
-                if (!file) {
-                    alert('Please select an image');
-                    return;
-                }
-                
-                // Reset containers
-                detectionsContainer.innerHTML = '';
-                uploadedImage.style.display = 'block';
-                detectionResults.style.display = 'none';
-                crowdMetrics.style.display = 'none';
-                
-                // Show loading indicator
-                loadingIndicator.style.display = 'flex';
-                loadingText.textContent = 'Processing crowd detection (this may take up to 60 seconds)...';
-                
-                // Display uploaded image
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedImage.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-                
-                // Send to backend with timeout
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
-                
-                const formData = new FormData();
-                formData.append('file', file);
-                
-                try {
-                    const response = await fetch('/detect_crowd', {
-                        method: 'POST',
-                        body: formData,
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    if (!response.ok) {
-                        throw new Error(`Server responded with status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
-                    
-                    drawDetections(data.detections);
-                    displayDetectionResults(data.detections);
-                    
-                    // Show enhanced crowd metrics
-                    peopleCountElement.textContent = data.people_count;
-                    crowdLevelElement.textContent = data.crowd_level;
-                    crowdDensityElement.textContent = data.crowd_density;
-                    crowdMetrics.style.display = 'block';
-                    
-                    // Update the dashboard with real crowd data
-                    updateDashboard(data.people_count, data.crowd_level);
-                    
-                } catch (error) {
-                    if (error.name === 'AbortError') {
-                        alert('Crowd detection timed out. Please try with a smaller image or use standard detection.');
-                    } else {
-                        console.error('Error:', error);
-                        alert(`Detection failed: ${error.message}\n\nPlease make sure the Flask server is running.`);
-                    }
-                } finally {
-                    loadingIndicator.style.display = 'none';
-                }
-            });
-            
-            function updateDashboard(peopleCount, crowdLevel) {
-                // Update the dashboard metrics
-                document.getElementById('head-count').textContent = peopleCount;
-                document.getElementById('density-level').textContent = crowdLevel;
-                
-                // Update density badge
-                const badge = document.getElementById('density-badge');
-                const statusText = document.getElementById('density-status');
-                
-                let densityClass;
-                if (crowdLevel === 'Low') {
-                    densityClass = 'status-low';
-                } else if (crowdLevel === 'Medium') {
-                    densityClass = 'status-medium';
-                } else {
-                    densityClass = 'status-high';
-                }
-                
-                badge.className = 'status-badge ' + densityClass;
-                statusText.textContent = crowdLevel + ' Crowd';
-                
-                // Update the chart
-                let lowPercent, mediumPercent, highPercent;
-                
-                if (crowdLevel === 'Low') {
-                    lowPercent = 80;
-                    mediumPercent = 15;
-                    highPercent = 5;
-                } else if (crowdLevel === 'Medium') {
-                    lowPercent = 30;
-                    mediumPercent = 60;
-                    highPercent = 10;
-                } else {
-                    lowPercent = 10;
-                    mediumPercent = 20;
-                    highPercent = 70;
-                }
-                
-                densityChart.data.datasets[0].data = [lowPercent, mediumPercent, highPercent];
-                densityChart.update();
-            }
-            
-            function drawDetections(detections) {
-                detectionsContainer.innerHTML = '';
-                
-                if (uploadedImage.complete) {
-                    // Image is already loaded, draw immediately
-                    drawBoundingBoxes(detections);
-                } else {
-                    // Wait for image to load
-                    uploadedImage.onload = function() {
-                        drawBoundingBoxes(detections);
-                    };
-                }
-            }
-            
-            function drawBoundingBoxes(detections) {
-                const scaleX = uploadedImage.clientWidth / uploadedImage.naturalWidth;
-                const scaleY = uploadedImage.clientHeight / uploadedImage.naturalHeight;
-                
-                detections.forEach(detection => {
-                    const [x1, y1, x2, y2] = detection.bbox;
-                    
-                    // Create bounding box
-                    const box = document.createElement('div');
-                    box.className = 'detection-box';
-                    box.style.left = `${x1 * scaleX}px`;
-                    box.style.top = `${y1 * scaleY}px`;
-                    box.style.width = `${(x2 - x1) * scaleX}px`;
-                    box.style.height = `${(y2 - y1) * scaleY}px`;
-                    
-                    // Create label
-                    const label = document.createElement('div');
-                    label.className = 'label';
-                    label.textContent = `${detection.class} ${(detection.confidence * 100).toFixed(1)}%`;
-                    label.style.left = `${x1 * scaleX}px`;
-                    label.style.top = `${y1 * scaleY - 20}px`;
-                    
-                    detectionsContainer.appendChild(box);
-                    detectionsContainer.appendChild(label);
-                });
-            }
-            
-            function displayDetectionResults(detections) {
-                detectionList.innerHTML = '';
-                
-                if (detections.length === 0) {
-                    detectionList.innerHTML = '<div class="detection-item">No objects detected</div>';
-                } else {
-                    // Count objects by class
-                    const classCounts = {};
-                    detections.forEach(detection => {
-                        if (!classCounts[detection.class]) {
-                            classCounts[detection.class] = {
-                                count: 0,
-                                confidences: []
-                            };
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + '%';
+                            }
                         }
-                        classCounts[detection.class].count++;
-                        classCounts[detection.class].confidences.push(detection.confidence);
-                    });
-                    
-                    // Display results
-                    for (const className in classCounts) {
-                        const item = document.createElement('div');
-                        item.className = 'detection-item';
-                        
-                        const avgConfidence = classCounts[className].confidences.reduce((a, b) => a + b, 0) / classCounts[className].confidences.length;
-                        
-                        item.innerHTML = `
-                            <span class="detection-class">${className}: ${classCounts[className].count}</span>
-                            <span class="detection-confidence">${(avgConfidence * 100).toFixed(1)}% confidence</span>
-                        `;
-                        
-                        detectionList.appendChild(item);
                     }
-                }
-                
-                detectionResults.style.display = 'block';
+                },
+                cutout: '70%'
             }
         });
-    </script>
-</body>
-</html>
+        
+        // Feature tab switching
+        featureTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                featureTabs.forEach(t => t.classList.remove('active'));
+                featureContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(`${tabId}-content`).classList.add('active');
+                
+                // Reset preview area when switching tabs
+                resetPreviewArea();
+            });
+        });
+        
+        // Reset preview area
+        function resetPreviewArea() {
+            uploadedImage.style.display = 'none';
+            processedVideo.style.display = 'none';
+            detectionsContainer.innerHTML = '';
+            detectionResults.style.display = 'none';
+            crowdMetrics.style.display = 'none';
+            loadingIndicator.style.display = 'none';
+        }
+        
+        // Standard image detection
+        detectButton.addEventListener('click', async function() {
+            const file = imageInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image');
+                return;
+            }
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'flex';
+            loadingText.textContent = 'Processing image...';
+            resetPreviewArea();
+            uploadedImage.style.display = 'block';
+            
+            // Display uploaded image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            // Send to backend with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/detect', {
+                    method: 'POST',
+                    body: formData,
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Count people in the detections
+                let peopleCount = 0;
+                data.detections.forEach(detection => {
+                    if (detection.class === 'person') {
+                        peopleCount++;
+                    }
+                });
+                
+                // Calculate crowd level based on people count
+                let crowdLevel;
+                if (peopleCount < 10) {
+                    crowdLevel = 'Low';
+                } else if (peopleCount < 30) {
+                    crowdLevel = 'Medium';
+                } else {
+                    crowdLevel = 'High';
+                }
+                
+                drawDetections(data.detections);
+                displayDetectionResults(data.detections);
+                
+                // Update dashboard with real data
+                updateDashboard(peopleCount, crowdLevel);
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    alert('Processing timed out. Please try with a smaller image.');
+                } else {
+                    console.error('Error:', error);
+                    alert(`Detection failed: ${error.message}\n\nPlease make sure the Flask server is running.`);
+                }
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        });
+        
+        // Crowd detection
+        detectCrowdButton.addEventListener('click', async function() {
+            const file = imageInput.files[0];
+            if (!file) {
+                alert('Please select an image');
+                return;
+            }
+            
+            // Reset containers
+            resetPreviewArea();
+            uploadedImage.style.display = 'block';
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'flex';
+            loadingText.textContent = 'Processing crowd detection (this may take up to 60 seconds)...';
+            
+            // Display uploaded image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            // Send to backend with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/detect_crowd', {
+                    method: 'POST',
+                    body: formData,
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                drawDetections(data.detections);
+                displayDetectionResults(data.detections);
+                
+                // Show enhanced crowd metrics
+                peopleCountElement.textContent = data.people_count;
+                crowdLevelElement.textContent = data.crowd_level;
+                crowdDensityElement.textContent = data.crowd_density;
+                crowdMetrics.style.display = 'block';
+                
+                // Update the dashboard with real crowd data
+                updateDashboard(data.people_count, data.crowd_level);
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    alert('Crowd detection timed out. Please try with a smaller image or use standard detection.');
+                } else {
+                    console.error('Error:', error);
+                    alert(`Detection failed: ${error.message}\n\nPlease make sure the Flask server is running.`);
+                }
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        });
+        
+        // Video processing with counting
+        processVideoButton.addEventListener('click', async function() {
+            const file = videoInput.files[0];
+            
+            if (!file) {
+                alert('Please select a video');
+                return;
+            }
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'flex';
+            loadingText.textContent = 'Processing video... This may take several minutes.';
+            resetPreviewArea();
+            processedVideo.style.display = 'block';
+            
+            // Create a URL for the video
+            const videoUrl = URL.createObjectURL(file);
+            processedVideo.src = videoUrl;
+            
+            // Send to backend with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout for videos
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/process_video', {
+                    method: 'POST',
+                    body: formData,
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // For video processing, we expect a video file in response
+                const blob = await fetch(data.video_url).then(r => r.blob());
+                const processedVideoUrl = URL.createObjectURL(blob);
+                processedVideo.src = processedVideoUrl;
+                
+                // Show results with counting data
+                detectionResults.style.display = 'block';
+                
+                // Display video processing results
+                let resultHTML = '';
+                if (data.frame_count) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">Frames Processed: ${data.frame_count}</span>
+                    </div>`;
+                }
+                
+                if (data.average_people_count !== undefined) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">Average People Count: ${data.average_people_count.toFixed(1)}</span>
+                    </div>`;
+                }
+                
+                if (data.max_people_count !== undefined) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">Max People Count: ${data.max_people_count}</span>
+                    </div>`;
+                }
+                
+                if (data.min_people_count !== undefined) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">Min People Count: ${data.min_people_count}</span>
+                    </div>`;
+                }
+                
+                detectionList.innerHTML = resultHTML || '<div class="detection-item">Video processed successfully</div>';
+                
+                // Update dashboard with average people count
+                if (data.average_people_count !== undefined) {
+                    let crowdLevel;
+                    if (data.average_people_count < 10) {
+                        crowdLevel = 'Low';
+                    } else if (data.average_people_count < 30) {
+                        crowdLevel = 'Medium';
+                    } else {
+                        crowdLevel = 'High';
+                    }
+                    updateDashboard(Math.round(data.average_people_count), crowdLevel);
+                }
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    alert('Video processing timed out. Please try with a shorter video.');
+                } else {
+                    console.error('Error:', error);
+                    alert(`Video processing failed: ${error.message}\n\nPlease make sure the Flask server is running.`);
+                }
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        });
+        
+    
+        
+        // Motion tracking with counting
+        motionButton.addEventListener('click', async function() {
+            const file = motionVideoInput.files[0];
+            
+            if (!file) {
+                alert('Please select a video');
+                return;
+            }
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'flex';
+            loadingText.textContent = 'Tracking motion... This may take several minutes.';
+            resetPreviewArea();
+            processedVideo.style.display = 'block';
+            
+            // Create a URL for the video
+            const videoUrl = URL.createObjectURL(file);
+            processedVideo.src = videoUrl;
+            
+            // Send to backend with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout for videos
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/track_motion', {
+                    method: 'POST',
+                    body: formData,
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // For motion tracking, we expect a video file in response
+                const blob = await fetch(data.video_url).then(r => r.blob());
+                const processedVideoUrl = URL.createObjectURL(blob);
+                processedVideo.src = processedVideoUrl;
+                
+                // Show results with motion tracking data
+                detectionResults.style.display = 'block';
+                
+                // Display motion tracking results
+                let resultHTML = '';
+                if (data.tracks_count !== undefined) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">Motion Tracks Detected: ${data.tracks_count}</span>
+                    </div>`;
+                }
+                
+                if (data.average_speed !== undefined) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">Average Speed: ${data.average_speed.toFixed(2)} px/frame</span>
+                    </div>`;
+                }
+                
+                if (data.direction_flow) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">Main Flow Direction: ${data.direction_flow}</span>
+                    </div>`;
+                }
+                
+                if (data.congestion_areas) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">Congestion Areas: ${data.congestion_areas}</span>
+                    </div>`;
+                }
+                
+                detectionList.innerHTML = resultHTML || '<div class="detection-item">Motion tracking completed successfully</div>';
+                
+                // Update dashboard with tracks count as people count
+                if (data.tracks_count !== undefined) {
+                    let crowdLevel;
+                    if (data.tracks_count < 10) {
+                        crowdLevel = 'Low';
+                    } else if (data.tracks_count < 30) {
+                        crowdLevel = 'Medium';
+                    } else {
+                        crowdLevel = 'High';
+                    }
+                    updateDashboard(data.tracks_count, crowdLevel);
+                }
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    alert('Motion tracking timed out. Please try with a shorter video.');
+                } else {
+                    console.error('Error:', error);
+                    alert(`Motion tracking failed: ${error.message}\n\nPlease make sure the Flask server is running.`);
+                }
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        });
+        
+        // Social distancing check with counting
+        socialDistanceButton.addEventListener('click', async function() {
+            const file = distanceImageInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image');
+                return;
+            }
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'flex';
+            loadingText.textContent = 'Checking social distancing...';
+            resetPreviewArea();
+            uploadedImage.style.display = 'block';
+            
+            // Display uploaded image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            // Send to backend with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/check_social_distancing', {
+                    method: 'POST',
+                    body: formData,
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Draw detections with social distancing indicators
+                drawDetections(data.detections);
+                
+                // Show results with social distancing data
+                detectionResults.style.display = 'block';
+                
+                // Display social distancing results
+                let resultHTML = '';
+                if (data.people_count !== undefined) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">People Counted: ${data.people_count}</span>
+                    </div>`;
+                }
+                
+                if (data.violations !== undefined) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">Social Distancing Violations: ${data.violations}</span>
+                        <span class="detection-confidence">${data.violations > 0 ? 'High Risk' : 'Safe'}</span>
+                    </div>`;
+                }
+                
+                if (data.compliance_rate !== undefined) {
+                    resultHTML += `<div class="detection-item">
+                        <span class="detection-class">Compliance Rate: ${data.compliance_rate.toFixed(1)}%</span>
+                    </div>`;
+                }
+                
+                detectionList.innerHTML = resultHTML;
+                
+                // Update dashboard with people count and risk level
+                if (data.people_count !== undefined) {
+                    let crowdLevel;
+                    if (data.violations > data.people_count * 0.3) { // If more than 30% are violating
+                        crowdLevel = 'High';
+                    } else if (data.violations > data.people_count * 0.1) { // If more than 10% are violating
+                        crowdLevel = 'Medium';
+                    } else {
+                        // Base crowd level on people count if few violations
+                        if (data.people_count < 10) {
+                            crowdLevel = 'Low';
+                        } else if (data.people_count < 30) {
+                            crowdLevel = 'Medium';
+                        } else {
+                            crowdLevel = 'High';
+                        }
+                    }
+                    updateDashboard(data.people_count, crowdLevel);
+                }
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    alert('Social distancing check timed out. Please try with a smaller image.');
+                } else {
+                    console.error('Error:', error);
+                    alert(`Social distancing check failed: ${error.message}\n\nPlease make sure the Flask server is running.`);
+                }
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        });
+        
+        function updateDashboard(peopleCount, crowdLevel) {
+            // Update the dashboard metrics
+            document.getElementById('head-count').textContent = peopleCount;
+            document.getElementById('density-level').textContent = crowdLevel;
+            
+            // Update density badge
+            const badge = document.getElementById('density-badge');
+            const statusText = document.getElementById('density-status');
+            
+            let densityClass;
+            if (crowdLevel === 'Low') {
+                densityClass = 'status-low';
+            } else if (crowdLevel === 'Medium') {
+                densityClass = 'status-medium';
+            } else {
+                densityClass = 'status-high';
+            }
+            
+            badge.className = 'status-badge ' + densityClass;
+            statusText.textContent = crowdLevel + ' Crowd';
+            
+            // Update the chart with dynamic data based on crowd level
+            let lowPercent, mediumPercent, highPercent;
+            
+            if (crowdLevel === 'Low') {
+                // For low crowd, show mostly green with small amounts of other colors
+                lowPercent = 85;
+                mediumPercent = 10;
+                highPercent = 5;
+            } else if (crowdLevel === 'Medium') {
+                // For medium crowd, show balanced distribution with more orange
+                lowPercent = 30;
+                mediumPercent = 60;
+                highPercent = 10;
+            } else {
+                // For high crowd, show mostly red with small amounts of other colors
+                lowPercent = 10;
+                mediumPercent = 20;
+                highPercent = 70;
+            }
+            
+            // Add some variation based on actual people count for more realistic visualization
+            if (peopleCount > 0) {
+                // Adjust percentages slightly based on actual count
+                const adjustmentFactor = Math.min(peopleCount / 50, 1); // Normalize to 0-1 range
+                
+                if (crowdLevel === 'Low') {
+                    lowPercent = Math.max(70, 85 - (adjustmentFactor * 15));
+                    mediumPercent = Math.min(25, 10 + (adjustmentFactor * 15));
+                    highPercent = Math.min(15, 5 + (adjustmentFactor * 10));
+                } else if (crowdLevel === 'Medium') {
+                    lowPercent = Math.max(15, 30 - (adjustmentFactor * 15));
+                    mediumPercent = Math.max(40, 60 - (adjustmentFactor * 20));
+                    highPercent = Math.min(45, 10 + (adjustmentFactor * 35));
+                } else {
+                    lowPercent = Math.max(5, 10 - (adjustmentFactor * 5));
+                    mediumPercent = Math.max(10, 20 - (adjustmentFactor * 10));
+                    highPercent = Math.min(85, 70 + (adjustmentFactor * 15));
+                }
+                
+                // Ensure percentages add up to 100
+                const total = lowPercent + mediumPercent + highPercent;
+                if (total !== 100) {
+                    const diff = 100 - total;
+                    // Add the difference to the dominant category
+                    if (crowdLevel === 'Low') {
+                        lowPercent += diff;
+                    } else if (crowdLevel === 'Medium') {
+                        mediumPercent += diff;
+                    } else {
+                        highPercent += diff;
+                    }
+                }
+            }
+            
+            // Update the chart with new data
+            densityChart.data.datasets[0].data = [
+                Math.round(lowPercent), 
+                Math.round(mediumPercent), 
+                Math.round(highPercent)
+            ];
+            densityChart.update();
+        }
+        
+        function drawDetections(detections) {
+            detectionsContainer.innerHTML = '';
+            
+            if (uploadedImage.complete) {
+                // Image is already loaded, draw immediately
+                drawBoundingBoxes(detections);
+            } else {
+                // Wait for image to load
+                uploadedImage.onload = function() {
+                    drawBoundingBoxes(detections);
+                };
+            }
+        }
+        
+        function drawBoundingBoxes(detections) {
+            const scaleX = uploadedImage.clientWidth / uploadedImage.naturalWidth;
+            const scaleY = uploadedImage.clientHeight / uploadedImage.naturalHeight;
+            
+            detections.forEach(detection => {
+                const [x1, y1, x2, y2] = detection.bbox;
+                
+                // Create bounding box
+                const box = document.createElement('div');
+                box.className = 'detection-box';
+                box.style.left = `${x1 * scaleX}px`;
+                box.style.top = `${y1 * scaleY}px`;
+                box.style.width = `${(x2 - x1) * scaleX}px`;
+                box.style.height = `${(y2 - y1) * scaleY}px`;
+                
+                // Create label
+                const label = document.createElement('div');
+                label.className = 'label';
+                label.textContent = `${detection.class} ${(detection.confidence * 100).toFixed(1)}%`;
+                label.style.left = `${x1 * scaleX}px`;
+                label.style.top = `${y1 * scaleY - 20}px`;
+                
+                detectionsContainer.appendChild(box);
+                detectionsContainer.appendChild(label);
+            });
+        }
+        
+        function displayDetectionResults(detections) {
+            detectionList.innerHTML = '';
+            
+            if (detections.length === 0) {
+                detectionList.innerHTML = '<div class="detection-item">No objects detected</div>';
+            } else {
+                // Count objects by class
+                const classCounts = {};
+                detections.forEach(detection => {
+                    if (!classCounts[detection.class]) {
+                        classCounts[detection.class] = {
+                            count: 0,
+                            confidences: []
+                        };
+                    }
+                    classCounts[detection.class].count++;
+                    classCounts[detection.class].confidences.push(detection.confidence);
+                });
+                
+                // Display results
+                for (const className in classCounts) {
+                    const item = document.createElement('div');
+                    item.className = 'detection-item';
+                    
+                    const avgConfidence = classCounts[className].confidences.reduce((a, b) => a + b, 0) / classCounts[className].confidences.length;
+                    
+                    item.innerHTML = `
+                        <span class="detection-class">${className}: ${classCounts[className].count}</span>
+                        <span class="detection-confidence">${(avgConfidence * 100).toFixed(1)}% confidence</span>
+                    `;
+                    
+                    detectionList.appendChild(item);
+                }
+            }
+            
+            detectionResults.style.display = 'block';
+        }
+    });
+</script>
+
+    </body>
+    </html>
