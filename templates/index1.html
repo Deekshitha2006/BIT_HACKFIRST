@@ -1182,11 +1182,12 @@
                     </div>`;
                 }
                 
-                if (data.average_people_count !== undefined) {
-                    resultHTML += `<div class="detection-item">
-                        <span class="detection-class">Average People Count: ${data.average_people_count.toFixed(1)}</span>
-                    </div>`;
-                }
+if (data.average_people_count !== undefined) {
+    resultHTML += `<div class="detection-item">
+        <span class="detection-class">Average People Count: ${Math.round(data.average_people_count)}</span>
+    </div>`;
+}
+
                 
                 if (data.max_people_count !== undefined) {
                     resultHTML += `<div class="detection-item">
